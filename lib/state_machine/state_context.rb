@@ -59,21 +59,20 @@ module StateMachine
   class StateContext < Module
     include Assertions
     include EvalHelpers
-    
-    # The state machine for which this context's state is defined
-    attr_reader :machine
-    
+
+
     # The state that must be present in an object for this context to be active
     attr_reader :state
-    
+
+    # The state machine for which this context's state is defined
+    delegate :machine, to: :state
+
     # Creates a new context for the given state
     def initialize(state)
       @state = state
-      @machine = state.machine
-      
+
       state_name = state.name
-      machine_name = machine.name
-      @condition = lambda {|object| object.class.state_machine(machine_name).states.matches?(object, state_name)}
+      @condition = lambda {|object| object.class.state_machine(machine.name).states.matches?(object, state_name)}
     end
     
     # Creates a new transition that determines what to change the current state
